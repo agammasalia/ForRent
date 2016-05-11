@@ -116,6 +116,11 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
             json.put("propertyNumberOfRooms",propertyNumberOfRooms);
 
             Log.d("JSON",json.toString());
+
+
+
+
+
             Toast.makeText(LandlordPostActivity.this, "Make it a post", Toast.LENGTH_SHORT).show();
         }
         else{

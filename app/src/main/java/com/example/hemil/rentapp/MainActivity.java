@@ -19,7 +19,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity
     protected DrawerLayout mDrawer;
     SharedPreferences sharedPref ;
     Menu menuOption;
+    ListView listview_home;
     //= Context.getSharedPreferences("Login", Context.MODE_PRIVATE);
 
     @Override
@@ -35,7 +41,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
        setSupportActionBar(toolbar);
-
+        listview_home = (ListView) findViewById(R.id.listView_home);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         sharedPref = getSharedPreferences("Login", Context.MODE_PRIVATE);
 
@@ -47,6 +53,56 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+
+        // Defined Array values to show in ListView
+        String[] values = new String[] { "Android List View",
+                "Adapter implementation",
+                "Simple List View In Android",
+                "Create List View Android",
+                "Android Example",
+                "List View Source Code",
+                "List View Array Adapter",
+                "Android Example List View"
+        };
+
+        // Define a new Adapter
+        // First parameter - Context
+        // Second parameter - Layout for the row
+        // Third parameter - ID of the TextView to which the data is written
+        // Forth - the Array of data
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, values);
+
+
+        // Assign adapter to ListView
+        listview_home.setAdapter(adapter);
+
+        // ListView Item Click Listener
+        listview_home.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                // ListView Clicked item index
+                int itemPosition     = position;
+
+                // ListView Clicked item value
+                String  itemValue    = (String) listview_home.getItemAtPosition(position);
+
+                // Show Alert
+                Toast.makeText(getApplicationContext(),
+                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+                        .show();
+
+            }
+
+        });
+
+
     }
 
     @Override
@@ -152,7 +208,9 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_home) {
             // Handle the camera action
-            Toast.makeText(MainActivity.this, "Home", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+           // Toast.makeText(MainActivity.this, "Home", Toast.LENGTH_SHORT).show();
 
         } else if (id == R.id.nav_serach) {
             Toast.makeText(MainActivity.this, "Search", Toast.LENGTH_SHORT).show();
@@ -161,11 +219,15 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_notifications) {
             Toast.makeText(MainActivity.this, "Notification", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_post) {
+
             Intent intent = new Intent(this,LandlordPostActivity.class);
             startActivity(intent);
 
-            Toast.makeText(MainActivity.this, "Post Property", Toast.LENGTH_SHORT).show();
+        //    Toast.makeText(MainActivity.this, "Post Property", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_edit) {
+
+            Intent intent = new Intent(this, LandlordShowListActivity.class);
+            startActivity(intent);
             Toast.makeText(MainActivity.this, "Edit Property", Toast.LENGTH_SHORT).show();
         }
 
@@ -173,4 +235,8 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+
+
 }

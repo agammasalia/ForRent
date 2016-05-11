@@ -19,6 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".LandlordPostActivity"></activity>
+        <activity android:name=".LandlordEditActivity"></activity>
+        <activity android:name=".LandlordShowListActivity"></activity>
     </application>
 
 </manifest>
