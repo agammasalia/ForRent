@@ -5,11 +5,13 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,7 +26,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.hemil.rentapp.API.RestApiClass;
+import com.squareup.okhttp.OkHttpClient;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+
+import POJO.Property;
+import retrofit.RestAdapter;
+import retrofit.client.OkClient;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -39,7 +51,9 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
        setSupportActionBar(toolbar);
         listview_home = (ListView) findViewById(R.id.listView_home);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -55,6 +69,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
 
+        ShowAllPropretyTask showAllPropretyTask = new ShowAllPropretyTask();
+        showAllPropretyTask.execute();
 
         // Defined Array values to show in ListView
         String[] values = new String[] { "Android List View",
@@ -93,10 +109,13 @@ public class MainActivity extends AppCompatActivity
                 // ListView Clicked item value
                 String  itemValue    = (String) listview_home.getItemAtPosition(position);
 
+                Intent intent = new Intent(getApplicationContext(), PropertyDetailsActivity.class);
+                startActivity(intent);
+
                 // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                        .show();
+//                Toast.makeText(getApplicationContext(),
+//                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+//                        .show();
 
             }
 
@@ -211,24 +230,26 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
            // Toast.makeText(MainActivity.this, "Home", Toast.LENGTH_SHORT).show();
-
         } else if (id == R.id.nav_serach) {
-            Toast.makeText(MainActivity.this, "Search", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this,RenterSearchActivity.class);
+            startActivity(intent);
+        //    Toast.makeText(MainActivity.this, "Search", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_favorites) {
-            Toast.makeText(MainActivity.this, "Favorites", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this,RenterFavoriteActivity.class);
+            startActivity(intent);
+        //    Toast.makeText(MainActivity.this, "Favorites", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_notifications) {
-            Toast.makeText(MainActivity.this, "Notification", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this,RenterNotificationActivity.class);
+            startActivity(intent);
+         //   Toast.makeText(MainActivity.this, "Notification", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_post) {
-
             Intent intent = new Intent(this,LandlordPostActivity.class);
             startActivity(intent);
-
         //    Toast.makeText(MainActivity.this, "Post Property", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_edit) {
-
             Intent intent = new Intent(this, LandlordShowListActivity.class);
             startActivity(intent);
-            Toast.makeText(MainActivity.this, "Edit Property", Toast.LENGTH_SHORT).show();
+      //      Toast.makeText(MainActivity.this, "Edit Property", Toast.LENGTH_SHORT).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -237,6 +258,46 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    public class ShowAllPropretyTask extends AsyncTask<String,Void,Void> {
+
+        RestAdapter restAdapter;
+        @Override
+        protected void onPreExecute(){
+
+
+            final OkHttpClient okHttpClient = new OkHttpClient();
+
+            String url = "http://ec2-54-153-29-131.us-west-1.compute.amazonaws.com:8080";
+
+            restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(url)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setClient(new OkClient(okHttpClient))
+                    .build();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+
+            final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
+
+//            Property property = new Property(10000,propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
+//                    propertyOwnerPhone,propertyStreetAddress,propertyCity,propertyState,propertyZip,propertyNumberOfBaths,
+//                    propertyNumberOfRooms,propertySquareFootage,"Available");
+
+//        Property property = new Property(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7]
+//                ,params[8],params[9],params[10],params[11],params[12],params[13],params[14]);
+
+//            Log.d("Property",property.toString());
+
+            List<Property> response = restApiClass.getAllListings();
+
+            Log.d("Response", response.toString());
+
+
+            return null;
+        }
+    }
 
 
 }

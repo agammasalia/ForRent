@@ -2,6 +2,7 @@ package com.example.hemil.rentapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,22 +13,33 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.hemil.rentapp.API.RestApiClass;
 import com.google.gson.Gson;
+import com.squareup.okhttp.OkHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import retrofit.*;
+import POJO.Property;
+import retrofit.client.OkClient;
 
 /**
  * Created by hemil on 5/8/2016.
  */
 public class LandlordPostActivity extends MainActivity implements AdapterView.OnItemSelectedListener {
 
-    String propertyType;
+    String propertyType,propertyDescription,propertyTitle, propertyOwnerEmail,propertyOwnerPhone,
+    propertyStreetAddress,propertyCity,propertyState,propertyZip;
+    int propertyNumberOfBaths =0, propertyNumberOfRooms = 0;
+    double propertyPrice, propertySquareFootage;
     EditText title,price,rooms,bath,area,street,city,state,zipcode,email,phone,desc;
+    Spinner spinner;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        findViewById(R.id.listView_home).setVisibility(View.INVISIBLE);
+
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //inflate your activity layout here!
@@ -35,7 +47,7 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
         mDrawer.addView(contentView, 0);
 
         //Do the rest as you want for each activity
-        Spinner spinner = (Spinner) findViewById(R.id.spinner_type);
+        spinner = (Spinner) findViewById(R.id.spinner_type);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.type_resources, android.R.layout.simple_spinner_item);
 
@@ -58,36 +70,34 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
 
     public void postPropertyMethod(View view) throws JSONException {
 
-         String propertyDescription = desc.getText().toString();
-         String propertyTitle = title.getText().toString();
-         String propertyOwnerEmail = email.getText().toString();
-         String propertyOwnerPhone = phone.getText().toString();
-         String propertyStreetAddress = street.getText().toString();
-         String propertyCity = city.getText().toString();
-         String propertyState = state.getText().toString();
-         String propertyZip = zipcode.getText().toString();
+         propertyDescription = desc.getText().toString();
+         propertyTitle = title.getText().toString();
+         propertyOwnerEmail = email.getText().toString();
+         propertyOwnerPhone = phone.getText().toString();
+         propertyStreetAddress = street.getText().toString();
+         propertyCity = city.getText().toString();
+         propertyState = state.getText().toString();
+         propertyZip = zipcode.getText().toString();
+        propertyType = spinner.getSelectedItem().toString();
 
-        double propertyPrice;
         if(!price.getText().toString().isEmpty()){
             Log.d("Price", price.getText().toString());
             propertyPrice = Double.valueOf(price.getText().toString());
         }else propertyPrice = 0;
 
-        int propertyNumberOfBaths;
         if(!bath.getText().toString().isEmpty()){
             Log.d("Bath",bath.getText().toString());
             propertyNumberOfBaths =  Integer.valueOf(bath.getText().toString());
         }else
             propertyNumberOfBaths = 0;
 
-        int propertyNumberOfRooms = 0;
         if(!rooms.getText().toString().isEmpty()){
             Log.d("rooms",rooms.getText().toString());
             propertyNumberOfRooms =  Integer.valueOf(rooms.getText().toString());
         }else
             propertyNumberOfRooms = 0;
 
-        double propertySquareFootage;
+
         if(!area.getText().toString().isEmpty()){
             Log.d("Area",area.getText().toString());
             propertySquareFootage = Double.valueOf(area.getText().toString());
@@ -99,29 +109,8 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
                 !propertyOwnerPhone.isEmpty() && !propertyStreetAddress.isEmpty() && !propertyCity.isEmpty()
                 && !propertyState.isEmpty() && !propertyZip.isEmpty() && propertyNumberOfRooms!=0 ){
 
-            JSONObject json = new JSONObject();
-            json.put("propertyOwnerId","");
-            json.put("propertyLocationId","");
-            json.put("propertyType",propertyType);
-            json.put("propertyPrice",propertyPrice);
-            json.put("propertyDescription",propertyDescription);
-            json.put("propertyTitle",propertyTitle);
-            json.put("propertyOwnerEmail",propertyOwnerEmail);
-            json.put("propertyOwnerPhone",propertyOwnerPhone);
-            json.put("propertyStreetAddress",propertyStreetAddress);
-            json.put("propertyCity",propertyCity);
-            json.put("propertyState",propertyState);
-            json.put("propertyZip",propertyZip);
-            json.put("propertyNumberOfBaths",propertyNumberOfBaths);
-            json.put("propertyNumberOfRooms",propertyNumberOfRooms);
-
-            Log.d("JSON",json.toString());
-
-
-
-
-
-            Toast.makeText(LandlordPostActivity.this, "Make it a post", Toast.LENGTH_SHORT).show();
+            PostPropretyTask postPropretyTask = new PostPropretyTask();
+            postPropretyTask.execute();
         }
         else{
             Toast.makeText(LandlordPostActivity.this, "Invalid Input", Toast.LENGTH_SHORT).show();
@@ -137,4 +126,53 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+
+
+    public class PostPropretyTask extends AsyncTask<String,Void,Void> {
+
+        RestAdapter restAdapter;
+        @Override
+        protected void onPreExecute(){
+
+
+            final OkHttpClient okHttpClient = new OkHttpClient();
+
+            String url = "http://ec2-54-153-29-131.us-west-1.compute.amazonaws.com:8080";
+
+            restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(url)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setClient(new OkClient(okHttpClient))
+                    .build();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+
+            final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
+
+        Property property = new Property(10000,propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
+                propertyOwnerPhone,propertyStreetAddress,propertyCity,propertyState,propertyZip,propertyNumberOfBaths,
+                propertyNumberOfRooms,propertySquareFootage,"Available");
+
+//        Property property = new Property(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7]
+//                ,params[8],params[9],params[10],params[11],params[12],params[13],params[14]);
+
+            Log.d("Property",property.toString());
+
+            JSONObject response = restApiClass.postProperty(property);
+
+            try {
+                Log.d("Response", response.get("message").toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+            return null;
+        }
+    }
+
+
 }

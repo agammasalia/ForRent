@@ -1,6 +1,7 @@
 package com.example.hemil.rentapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ public class LandlordShowListActivity extends MainActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        findViewById(R.id.listView_home).setVisibility(View.INVISIBLE);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //inflate your activity layout here!
@@ -26,17 +28,9 @@ public class LandlordShowListActivity extends MainActivity {
 
         listView = (ListView) findViewById(R.id.listView);
 
-
-
         // Defined Array values to show in ListView
         String[] values = new String[] { "Android List View",
                 "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View"
         };
 
         // Define a new Adapter
@@ -65,10 +59,12 @@ public class LandlordShowListActivity extends MainActivity {
                 // ListView Clicked item value
                 String  itemValue    = (String) listView.getItemAtPosition(position);
 
+                Intent intent = new Intent(getApplicationContext(), PropertyDetailsActivity.class);
+                startActivity(intent);
                 // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-                        .show();
+//                Toast.makeText(getApplicationContext(),
+//                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
+//                        .show();
 
             }
 
