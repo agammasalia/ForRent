@@ -1,17 +1,11 @@
 package com.example.hemil.rentapp;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,15 +16,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.hemil.rentapp.API.RestApiClass;
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -45,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences sharedPref ;
     Menu menuOption;
     ListView listview_home;
+    List<Property> response;
     //= Context.getSharedPreferences("Login", Context.MODE_PRIVATE);
 
     @Override
@@ -68,60 +60,36 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         ShowAllPropretyTask showAllPropretyTask = new ShowAllPropretyTask();
         showAllPropretyTask.execute();
 
-        // Defined Array values to show in ListView
-        String[] values = new String[] { "Android List View",
-                "Adapter implementation",
-                "Simple List View In Android",
-                "Create List View Android",
-                "Android Example",
-                "List View Source Code",
-                "List View Array Adapter",
-                "Android Example List View"
-        };
+    }
 
-        // Define a new Adapter
-        // First parameter - Context
-        // Second parameter - Layout for the row
-        // Third parameter - ID of the TextView to which the data is written
-        // Forth - the Array of data
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, values);
+    private void populateList(){
 
 
-        // Assign adapter to ListView
+        PopulateListViewAdapter adapter = new PopulateListViewAdapter(this,response);
         listview_home.setAdapter(adapter);
-
-        // ListView Item Click Listener
         listview_home.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                // ListView Clicked item index
-                int itemPosition     = position;
-
-                // ListView Clicked item value
-                String  itemValue    = (String) listview_home.getItemAtPosition(position);
 
                 Intent intent = new Intent(getApplicationContext(), PropertyDetailsActivity.class);
+                Gson gson = new Gson();
+                String str = gson.toJson(response.get(position)).toString();
+                Log.d("Property",str);
+                intent.putExtra("Property",str);
                 startActivity(intent);
-
-                // Show Alert
-//                Toast.makeText(getApplicationContext(),
-//                        "Position :"+itemPosition+"  ListItem : " +itemValue , Toast.LENGTH_LONG)
-//                        .show();
-
             }
 
         });
+    }
 
-
+    public void setList(List<Property> list){
+        response = list;
     }
 
     @Override
@@ -247,6 +215,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(intent);
         //    Toast.makeText(MainActivity.this, "Post Property", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_edit) {
+            Log.d("Initiated","EditSHow");
             Intent intent = new Intent(this, LandlordShowListActivity.class);
             startActivity(intent);
       //      Toast.makeText(MainActivity.this, "Edit Property", Toast.LENGTH_SHORT).show();
@@ -258,17 +227,13 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public class ShowAllPropretyTask extends AsyncTask<String,Void,Void> {
+    public class ShowAllPropretyTask extends AsyncTask<String, Void, Void> {
 
         RestAdapter restAdapter;
         @Override
         protected void onPreExecute(){
-
-
             final OkHttpClient okHttpClient = new OkHttpClient();
-
             String url = "http://ec2-54-153-29-131.us-west-1.compute.amazonaws.com:8080";
-
             restAdapter = new RestAdapter.Builder()
                     .setEndpoint(url)
                     .setLogLevel(RestAdapter.LogLevel.FULL)
@@ -280,23 +245,30 @@ public class MainActivity extends AppCompatActivity
         protected Void doInBackground(String... params) {
 
             final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
-
-//            Property property = new Property(10000,propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
-//                    propertyOwnerPhone,propertyStreetAddress,propertyCity,propertyState,propertyZip,propertyNumberOfBaths,
-//                    propertyNumberOfRooms,propertySquareFootage,"Available");
-
-//        Property property = new Property(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7]
-//                ,params[8],params[9],params[10],params[11],params[12],params[13],params[14]);
-
-//            Log.d("Property",property.toString());
-
-            List<Property> response = restApiClass.getAllListings();
-
+            response = restApiClass.getAllListings();
             Log.d("Response", response.toString());
 
 
+            setList(response);
+            Log.d("Populate", "list");
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+//stuff that updates ui
+                    populateList();
+                }
+            });
+
             return null;
         }
+
+        protected void onPostExecute(){
+            Log.d("Inside","PostExceute");
+            populateList();
+        }
+
     }
 
 

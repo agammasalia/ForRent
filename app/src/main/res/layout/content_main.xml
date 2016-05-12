@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <ListView
+    android:layout_marginTop="100dp"
     android:id="@+id/listView_home"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
