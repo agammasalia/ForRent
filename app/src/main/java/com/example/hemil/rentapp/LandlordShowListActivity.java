@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.hemil.rentapp.API.RestApiClass;
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class LandlordShowListActivity extends MainActivity {
         View contentView = inflater.inflate(R.layout.landlord_list_show, null, false);
         mDrawer.addView(contentView, 0);
 
-
+        new ShowLandlordProperties().execute();
     }
 
     private void recordList(List<Property> list){
@@ -47,11 +48,11 @@ public class LandlordShowListActivity extends MainActivity {
     }
 
     private void showListView(){
-        listView = (ListView) findViewById(R.id.listView);
-        PopulateListViewAdapter populateListViewAdapter = new PopulateListViewAdapter(this,response);
+        listView = (ListView) findViewById(R.id.listView_landlord_show);
+        PopulateListViewAdapter populateListViewAdapter = new PopulateListViewAdapter(this, response);
         listView.setAdapter(populateListViewAdapter);
 
-        new ShowLandlordProperties().execute();
+      //  new ShowLandlordProperties().execute();
         // ListView Item Click Listener
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -59,8 +60,10 @@ public class LandlordShowListActivity extends MainActivity {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
-                Intent intent = new Intent(getApplicationContext(), PropertyDetailsActivity.class);
-                intent.putExtra("Property",response.get(position).toString());
+                Intent intent = new Intent(getApplicationContext(), LandlordEditActivity.class);
+                Gson gson = new Gson();
+                String str = gson.toJson(response.get(position)).toString();
+                intent.putExtra("Property",str);
                 startActivity(intent);
             }
 
