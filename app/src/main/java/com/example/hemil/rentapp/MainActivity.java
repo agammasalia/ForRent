@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -18,6 +19,16 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+
 
 import com.example.hemil.rentapp.API.RestApiClass;
 import com.google.gson.Gson;
@@ -37,12 +48,18 @@ public class MainActivity extends AppCompatActivity
     Menu menuOption;
     ListView listview_home;
     List<Property> response;
+    private CallbackManager callbackManager;
+
     //= Context.getSharedPreferences("Login", Context.MODE_PRIVATE);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -143,6 +160,9 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean("isLogin", true);
             editor.commit();
+
+        Intent intent = new Intent(this, SignInActivity.class);
+            startActivity(intent);
 
      //       updateMenuOptions();
      //       invalidateOptionsMenu();

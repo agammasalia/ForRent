@@ -6,12 +6,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -22,6 +26,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges= "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
+
+
         <activity android:name=".LandlordPostActivity"></activity>
         <activity android:name=".LandlordEditActivity"></activity>
         <activity android:name=".LandlordShowListActivity"></activity>
@@ -29,6 +41,7 @@
         <activity android:name=".RenterFavoriteActivity"></activity>
         <activity android:name=".RenterNotificationActivity"></activity>
         <activity android:name=".PropertyDetailsActivity"></activity>
+        <activity android:name=".SignInActivity"></activity>
     </application>
 
 </manifest>
