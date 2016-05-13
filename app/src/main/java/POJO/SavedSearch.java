@@ -17,6 +17,15 @@ public class SavedSearch {
 
     public SavedSearch(){}
 
+    public SavedSearch( double searchHighPrice, double searchLowPrice, String searchKeyword, String searchCity, String searchZip, String searchPropertyType) {
+        this.searchHighPrice = searchHighPrice;
+        this.searchLowPrice = searchLowPrice;
+        this.searchKeyword = searchKeyword;
+        this.searchCity = searchCity;
+        this.searchZip = searchZip;
+        this.searchPropertyType = searchPropertyType;
+    }
+
     public SavedSearch(long searchId, long searchUserId, double searchHighPrice, double searchLowPrice, String searchKeyword, String searchCity, String searchZip, String searchPropertyType) {
         this.searchId = searchId;
         this.searchUserId = searchUserId;

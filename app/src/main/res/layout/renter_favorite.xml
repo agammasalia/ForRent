@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ListView
-    android:id="@+id/listView_favorite"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    />
+    android:orientation="vertical">
+
+    <ListView
+        android:id="@+id/listView_favorite"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <TextView
+        android:id="@+id/nofavorites"
+        android:text="No Favorites !"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

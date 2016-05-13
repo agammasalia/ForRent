@@ -10,11 +10,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hemil.rentapp.API.RestApiClass;
 import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -49,25 +52,33 @@ public class LandlordShowListActivity extends MainActivity {
 
     private void showListView(){
         listView = (ListView) findViewById(R.id.listView_landlord_show);
-        PopulateListViewAdapter populateListViewAdapter = new PopulateListViewAdapter(this, response);
-        listView.setAdapter(populateListViewAdapter);
 
-      //  new ShowLandlordProperties().execute();
-        // ListView Item Click Listener
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        if(response.size()>0) {
+            PopulateListViewAdapter populateListViewAdapter = new PopulateListViewAdapter(this, response);
+            listView.setAdapter(populateListViewAdapter);
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+            //  new ShowLandlordProperties().execute();
+            // ListView Item Click Listener
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-                Intent intent = new Intent(getApplicationContext(), LandlordEditActivity.class);
-                Gson gson = new Gson();
-                String str = gson.toJson(response.get(position)).toString();
-                intent.putExtra("Property",str);
-                startActivity(intent);
-            }
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
 
-        });
+                    Intent intent = new Intent(getApplicationContext(), LandlordEditActivity.class);
+                    Gson gson = new Gson();
+                    String str = gson.toJson(response.get(position)).toString();
+                    intent.putExtra("Property", str);
+                    startActivity(intent);
+                }
+
+            });
+        }
+        else{
+            listView.setVisibility(View.INVISIBLE);
+            TextView textView = (TextView) findViewById(R.id.noprops);
+            textView.setVisibility(View.VISIBLE);
+        }
     }
 
     public class ShowLandlordProperties extends AsyncTask<Void,Void,Void>{
@@ -95,8 +106,10 @@ public class LandlordShowListActivity extends MainActivity {
                 @Override
                 public void run() {
 //stuff that updates ui
-                 recordList(response);
-                    showListView();
+                    if (response.size() > 0)
+                        recordList(response);
+                        showListView();
+
                 }
             });
 

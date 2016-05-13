@@ -18,6 +18,14 @@ public class Favourites {
         this.favouritesPropertyId = favouritesPropertyId;
     }
 
+    public Favourites(long favouritesUserId, long favouritesPropertyId) {
+        this.favouritesUserId = favouritesUserId;
+        this.favouritesPropertyId = favouritesPropertyId;
+    }
+
+
+
+
     public String getId() {
         return id;
     }

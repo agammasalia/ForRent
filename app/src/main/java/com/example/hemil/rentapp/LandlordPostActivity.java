@@ -2,6 +2,7 @@ package com.example.hemil.rentapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -152,7 +153,7 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
 
             final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
 
-        Property property = new Property(10000,propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
+        Property property = new Property(1,propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
                 propertyOwnerPhone,propertyStreetAddress,propertyCity,propertyState,propertyZip,propertyNumberOfBaths,
                 propertyNumberOfRooms,propertySquareFootage,"Available");
 
@@ -169,7 +170,14 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
                 e.printStackTrace();
             }
 
-
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//stuff that updates ui
+                    Intent intent = new Intent(getApplicationContext(),LandlordShowListActivity.class);
+                    startActivity(intent);
+                }
+            });
             return null;
         }
     }

@@ -5,8 +5,11 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import POJO.Favourites;
 import POJO.Property;
+import POJO.SavedSearch;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.POST;
@@ -31,4 +34,21 @@ public interface RestApiClass {
 
     @PUT("/listing")
     JSONObject updateProperty(@Body Property property);
+
+    @POST("/search")
+    List<Property> getSearchResults(@Body SavedSearch savedSearch);
+
+    @POST("/savedsearch")
+    JSONObject saveSearchForUser(@Body SavedSearch savedSearch);
+
+    @Headers("Content-Type: application/json")
+    @DELETE("/listing")
+    JSONObject deleteProperty(@Query("propertyId") long propertyId);
+
+    @POST("/favourites")
+    JSONObject addBookmark(@Body Favourites favourites);
+
+    @Headers("Content-Type: application/json")
+    @GET("/favourites")
+    List<Property> getAllFavorites(@Query("userId") long userId);
 }

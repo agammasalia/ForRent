@@ -133,7 +133,45 @@ public class LandlordEditActivity extends MainActivity {
     }
 
     public void deletePropertyMethod(View view){
+        new DeletePropertyAsync().execute();
+    }
 
+    private class DeletePropertyAsync extends AsyncTask<Void,Void,Void>{
+        RestAdapter restAdapter;
+
+        @Override
+        protected void onPreExecute(){
+
+
+            final OkHttpClient okHttpClient = new OkHttpClient();
+
+            String url = "http://ec2-54-153-29-131.us-west-1.compute.amazonaws.com:8080";
+
+            restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(url)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setClient(new OkClient(okHttpClient))
+                    .build();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
+
+            JSONObject jsonObject = restApiClass.deleteProperty(property.getPropertyId());
+            Log.d("delete Response",jsonObject.toString());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//stuff that updates ui
+                    Toast.makeText(getApplicationContext(), "Property Deleted!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(),LandlordShowListActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            return null;
+        }
     }
 
     private class UpdatePropertyAsync extends AsyncTask<Void,Void,Void>{
