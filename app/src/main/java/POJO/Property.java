@@ -25,11 +25,12 @@ public class Property {
     private int propertyNumberOfRooms;
     private double propertySquareFootage;
     private String propertyRentStatus;
+    private String propertyImage;
 
     public Property()
     {}
 
-    public Property(long propertyOwnerId, String propertyType, double propertyPrice, String propertyDescription, String propertyTitle, String propertyOwnerEmail, String propertyOwnerPhone, String propertyStreetAddress, String propertyCity, String propertyState, String propertyZip, int propertyNumberOfBaths, int propertyNumberOfRooms, double propertySquareFootage, String propertyRentStatus) {
+    public Property(long propertyOwnerId, String propertyType, double propertyPrice, String propertyDescription, String propertyTitle, String propertyOwnerEmail, String propertyOwnerPhone, String propertyStreetAddress, String propertyCity, String propertyState, String propertyZip, int propertyNumberOfBaths, int propertyNumberOfRooms, double propertySquareFootage, String propertyRentStatus,String propertyImage) {
         this.propertyOwnerId = propertyOwnerId;
         this.propertyType = propertyType;
         this.propertyPrice = propertyPrice;
@@ -45,6 +46,7 @@ public class Property {
         this.propertyNumberOfRooms = propertyNumberOfRooms;
         this.propertySquareFootage = propertySquareFootage;
         this.propertyRentStatus = propertyRentStatus;
+        this.propertyImage=propertyImage;
     }
 
     public String getId() {
@@ -187,27 +189,11 @@ public class Property {
         this.propertyRentStatus = propertyRentStatus;
     }
 
-    @Override
-    public String toString() {
-        return "Property{" +
-                "propertyId=" + propertyId +
-                ", propertyOwnerId=" + propertyOwnerId +
-                ", propertyLocationId=" + propertyLocationId +
-                ", propertyType='" + propertyType + '\'' +
-                ", propertyPrice=" + propertyPrice +
-                ", propertyDescription='" + propertyDescription + '\'' +
-                ", propertyTitle='" + propertyTitle + '\'' +
-                ", propertyOwnerEmail='" + propertyOwnerEmail + '\'' +
-                ", propertyOwnerPhone='" + propertyOwnerPhone + '\'' +
-                ", propertyStreetAddress='" + propertyStreetAddress + '\'' +
-                ", propertyCity='" + propertyCity + '\'' +
-                ", propertyState='" + propertyState + '\'' +
-                ", propertyZip='" + propertyZip + '\'' +
-                ", propertyNumberOfBaths=" + propertyNumberOfBaths +
-                ", propertyNumberOfRooms=" + propertyNumberOfRooms +
-                ", propertySquareFootage=" + propertySquareFootage +
-                ", propertyRentStatus='" + propertyRentStatus + '\'' +
-                '}';
+    public String getPropertyImage() {
+        return propertyImage;
     }
 
+    public void setPropertyImage(String propertyImage) {
+        this.propertyImage = propertyImage;
+    }
 }

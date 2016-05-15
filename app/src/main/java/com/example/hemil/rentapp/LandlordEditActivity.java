@@ -199,7 +199,7 @@ public class LandlordEditActivity extends MainActivity {
 
             Property property_new = new Property(property.getPropertyOwnerId(),propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
                     propertyOwnerPhone,propertyStreetAddress,propertyCity,propertyState,propertyZip,propertyNumberOfBaths,
-                    propertyNumberOfRooms,propertySquareFootage,"Available");
+                    propertyNumberOfRooms,propertySquareFootage,"Available","");
 
             property_new.setPropertyId(property.getPropertyId());
             property_new.setPropertyLocationId(property.getPropertyLocationId());

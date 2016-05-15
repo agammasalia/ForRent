@@ -23,6 +23,9 @@ public class PopulateListViewAdapter extends BaseAdapter {
     Context context;
     List<Property> propertyList;
     LayoutInflater layoutInflater;
+    TextView title, price, location, bba;
+
+
     public PopulateListViewAdapter(Context context, List<Property> propertyList){
         this.context = context;
         this.propertyList = propertyList;
@@ -48,7 +51,6 @@ public class PopulateListViewAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        TextView title = null, price =null, location = null, bba = null;
         if(convertView == null){
             convertView = layoutInflater.inflate(R.layout.property_list_item,null);
 
@@ -57,6 +59,7 @@ public class PopulateListViewAdapter extends BaseAdapter {
             location = (TextView) convertView.findViewById(R.id.property_item_location);
             bba = (TextView) convertView.findViewById(R.id.property_item_bath_bed_area);
         }
+
 
         title.setText(propertyList.get(position).getPropertyTitle());
         price.setText("Price:"+ propertyList.get(position).getPropertyPrice()+" USD");
