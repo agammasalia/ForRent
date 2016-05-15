@@ -8,6 +8,7 @@ import java.util.List;
 import POJO.Favourites;
 import POJO.Property;
 import POJO.SavedSearch;
+import POJO.User;
 import retrofit.http.Body;
 import retrofit.http.DELETE;
 import retrofit.http.GET;
@@ -51,4 +52,8 @@ public interface RestApiClass {
     @Headers("Content-Type: application/json")
     @GET("/favourites")
     List<Property> getAllFavorites(@Query("userId") long userId);
+
+    @Headers("Content-Type: application/json")
+    @POST("/user")
+    JSONObject sendFacebookDetails(@Body User user);
 }

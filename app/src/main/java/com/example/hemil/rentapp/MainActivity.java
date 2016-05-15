@@ -1,39 +1,40 @@
 package com.example.hemil.rentapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginResult;
 
-
-import com.example.hemil.rentapp.API.RestApiClass;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.gson.Gson;
+
 import com.squareup.okhttp.OkHttpClient;
 
+import com.example.hemil.rentapp.API.RestApiClass;
+
+import java.io.IOException;
 import java.util.List;
 
 import POJO.Property;
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity
     List<Property> response;
     private CallbackManager callbackManager;
 
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private boolean isReceiverRegistered;
+    private int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     //= Context.getSharedPreferences("Login", Context.MODE_PRIVATE);
 
     @Override
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-       setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
         listview_home = (ListView) findViewById(R.id.listView_home);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         sharedPref = getSharedPreferences("Login", Context.MODE_PRIVATE);
@@ -80,6 +84,29 @@ public class MainActivity extends AppCompatActivity
         ShowAllPropretyTask showAllPropretyTask = new ShowAllPropretyTask();
         showAllPropretyTask.execute();
 
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+                if (sentToken) {
+//                    mInformationTextView.setText(getString(R.string.gcm_send_message));
+                } else {
+//                    mInformationTextView.setText(getString(R.string.token_error_message));
+                }
+            }
+        };
+
+        // Registering BroadcastReceiver
+        registerReceiver();
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
     }
 
     private void populateList(){
@@ -192,7 +219,7 @@ public class MainActivity extends AppCompatActivity
         MenuItem signout = menuOption.getItem(R.id.sign_out);
 
         boolean flag = sharedPref.getBoolean("isLogin",false);
-        Log.d("OnprepareOptionMenu Result",""+flag);
+        Log.d("OnResult", "" + flag);
 
         if(flag)
         {
@@ -291,5 +318,46 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
+        super.onPause();
+    }
+
+    private void registerReceiver(){
+        if(!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i("No Support", "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
 
 }

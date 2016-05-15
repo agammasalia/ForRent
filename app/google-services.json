@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "600016950879",
+    "project_id": "default-demo-app-c9175"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:600016950879:android:adc58133d3570faa",
+        "android_client_info": {
+          "package_name": "com.example.hemil.rentapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKgYJ1DYe_PslP0ASGu9OL9WIyGChiavM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
