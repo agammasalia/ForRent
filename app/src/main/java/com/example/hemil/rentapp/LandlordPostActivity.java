@@ -3,11 +3,13 @@ package com.example.hemil.rentapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,11 +55,15 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
     Spinner spinner;
     ImageView imageView1, imageView2;
     BufferedInputStream fileInputStream1, fileInputStream2;
+    SharedPreferences sharedPreferences;
+    long userId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         findViewById(R.id.listView_home).setVisibility(View.INVISIBLE);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        userId = sharedPreferences.getLong("userId", 0);
 
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -126,6 +132,7 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
                     FileInputStream fileInputStream = new FileInputStream(file);
                     fileInputStream1 = new BufferedInputStream(fileInputStream);
                     Log.d("F1",fileInputStream1.toString());
+                    imageView1.setImageURI(Uri.parse(imgDecodableString));
                 }
                 else
                 {
@@ -242,10 +249,13 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
                 Map uploadResult =  cloudinary.uploader().upload(imgDecodableString, ObjectUtils.emptyMap());
                 Log.d("URL", uploadResult.get("url").toString());
 
-
-        Property property = new Property(1,propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
+                String str = null;
+                if(uploadResult!=null){
+                    str = uploadResult.get("url").toString();
+                }
+        Property property = new Property(userId,propertyType,propertyPrice,propertyDescription,propertyTitle,propertyOwnerEmail,
                 propertyOwnerPhone,propertyStreetAddress,propertyCity,propertyState,propertyZip,propertyNumberOfBaths,
-                propertyNumberOfRooms,propertySquareFootage,"Available",uploadResult.get("url").toString());
+                propertyNumberOfRooms,propertySquareFootage,"Available",str);
 
 //        Property property = new Property(params[0],params[1],params[2],params[3],params[4],params[5],params[6],params[7]
 //                ,params[8],params[9],params[10],params[11],params[12],params[13],params[14]);
@@ -270,6 +280,7 @@ public class LandlordPostActivity extends MainActivity implements AdapterView.On
 //stuff that updates ui
                     Intent intent = new Intent(getApplicationContext(),LandlordShowListActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             return null;

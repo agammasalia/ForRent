@@ -56,4 +56,10 @@ public interface RestApiClass {
     @Headers("Content-Type: application/json")
     @POST("/user")
     JSONObject sendFacebookDetails(@Body User user);
+
+    @Headers("Content-Type: application/json")
+    @DELETE("/favourites")
+    JSONObject deleteFavorite(@Query("userId") long userId, @Query("propertyId") long propertyId);
+
+
 }

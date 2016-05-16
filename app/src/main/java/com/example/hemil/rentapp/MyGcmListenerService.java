@@ -14,6 +14,9 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.google.gson.Gson;
+
+import POJO.Property;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -29,7 +32,16 @@ public class MyGcmListenerService extends GcmListenerService {
     // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
+
         String message = data.getString("message");
+
+
+        String property = data.getString("property");
+        Gson gson = new Gson();
+
+        Property property1 = gson.fromJson(gson.toJson(property),Property.class);
+
+        Log.d("property Object",property1.toString());
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
 
@@ -51,7 +63,7 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        sendNotification(message,property);
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -61,9 +73,10 @@ public class MyGcmListenerService extends GcmListenerService {
      *
      * @param message GCM message received.
      */
-    private void sendNotification(String message) {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void sendNotification(String message, String property) {
+        Intent intent = new Intent(this, PropertyDetailsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("Property",property);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

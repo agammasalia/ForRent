@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -15,12 +18,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -35,6 +40,8 @@ import com.squareup.okhttp.OkHttpClient;
 import com.example.hemil.rentapp.API.RestApiClass;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import POJO.Property;
@@ -45,12 +52,12 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     protected DrawerLayout mDrawer;
-    SharedPreferences sharedPref ;
+    SharedPreferences sharedPreferences;
     Menu menuOption;
     ListView listview_home;
     List<Property> response;
     private CallbackManager callbackManager;
-
+    TextView nopreview;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private boolean isReceiverRegistered;
     private int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -61,16 +68,48 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        long userId = sharedPreferences.getLong("userId", 0);
+
+        if(userId == 0){
+            Intent intent = new Intent(this, SignInActivity.class);
+            startActivity(intent);
+        }
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.example.hemil.rentapp",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = null;
+                try {
+                    md = MessageDigest.getInstance("SHA");
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                }
+                md.update(signature.toByteArray());
+                String s = Base64.encodeToString(md.digest(), Base64.DEFAULT);
+                Log.v("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+                Log.i("K", s);
+                Log.d("K", s);
+                Log.e("K", s);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+
+        } catch (Exception e) {
+
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        nopreview = (TextView) findViewById(R.id.nopreviewshow);
         setSupportActionBar(toolbar);
         listview_home = (ListView) findViewById(R.id.listView_home);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        sharedPref = getSharedPreferences("Login", Context.MODE_PRIVATE);
+ //       sharedPref = getSharedPreferences("Login", Context.MODE_PRIVATE);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -111,25 +150,31 @@ public class MainActivity extends AppCompatActivity
 
     private void populateList(){
 
+        if(response==null){
+            nopreview.setVisibility(View.VISIBLE);
+        }
+        else{
+            PopulateListViewAdapter adapter = new PopulateListViewAdapter(this,response);
+            listview_home.setAdapter(adapter);
+            listview_home.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-        PopulateListViewAdapter adapter = new PopulateListViewAdapter(this,response);
-        listview_home.setAdapter(adapter);
-        listview_home.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
 
 
-                Intent intent = new Intent(getApplicationContext(), PropertyDetailsActivity.class);
-                Gson gson = new Gson();
-                String str = gson.toJson(response.get(position)).toString();
-                Log.d("Property",str);
-                intent.putExtra("Property",str);
-                startActivity(intent);
-            }
+                    Intent intent = new Intent(getApplicationContext(), PropertyDetailsActivity.class);
+                    Gson gson = new Gson();
+                    String str = gson.toJson(response.get(position)).toString();
+                    Log.d("Property",str);
+                    intent.putExtra("Property", str);
+                    intent.putExtra("Favorite","false");
+                    startActivity(intent);
+                }
 
-        });
+            });
+        }
+
     }
 
     public void setList(List<Property> list){
@@ -152,18 +197,30 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.main, menu);
 
         menuOption = menu;
-        boolean flag = sharedPref.getBoolean("isLogin", false);
 
-        Log.d("OnCreateOption", "" + flag);
-        if(flag)
-        {
-            menu.findItem(R.id.sign_out).setVisible(false);
+        long userId = sharedPreferences.getLong("userId", 0);
+        if(userId == 0){
             menu.findItem(R.id.sign_in).setVisible(true);
+            menu.findItem(R.id.sign_out).setVisible(false);
+
         }
         else{
-            menu.findItem(R.id.sign_in).setVisible(true);
-            menu.findItem(R.id.sign_out).setVisible(false);
+            menu.findItem(R.id.sign_out).setVisible(true);
+            menu.findItem(R.id.sign_in).setVisible(false);
         }
+
+        //    boolean flag = sharedPref.getBoolean("isLogin", false);
+
+//        Log.d("OnCreateOption", "" + flag);
+//        if(flag)
+//        {
+//            menu.findItem(R.id.sign_out).setVisible(false);
+//            menu.findItem(R.id.sign_in).setVisible(true);
+//        }
+//        else{
+//            menu.findItem(R.id.sign_in).setVisible(true);
+//            menu.findItem(R.id.sign_out).setVisible(false);
+//        }
     //   boolean flag = getResources().getBoolean((R.string.login_test));
     //    Log.d("Flag",""+flag);
         return true;
@@ -184,9 +241,9 @@ public class MainActivity extends AppCompatActivity
 
         if( id == R.id.sign_in){
           //  SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean("isLogin", true);
-            editor.commit();
+//            SharedPreferences.Editor editor = sharedPref.edit();
+//            editor.putBoolean("isLogin", true);
+//            editor.commit();
 
         Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
@@ -199,12 +256,14 @@ public class MainActivity extends AppCompatActivity
 
         if(id == R.id.sign_out){
             //SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean("isLogin", false);
-            editor.commit();
-            updateMenuOptions();
+//            SharedPreferences.Editor editor = sharedPref.edit();
+//            editor.putBoolean("isLogin", false);
+//            editor.commit();
+//            updateMenuOptions();
        //     invalidateOptionsMenu();
           //  Toast.makeText(MainActivity.this, "Sign-Out!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, SignInActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -212,27 +271,27 @@ public class MainActivity extends AppCompatActivity
 
     // Override this method to do what you want when the menu is recreated
 
-    public void updateMenuOptions() {
-//        menu.findItem(R.id.pencil).setVisible(false);
-
-        MenuItem signin = menuOption.getItem(R.id.sign_in);
-        MenuItem signout = menuOption.getItem(R.id.sign_out);
-
-        boolean flag = sharedPref.getBoolean("isLogin",false);
-        Log.d("OnResult", "" + flag);
-
-        if(flag)
-        {
-            signin.setVisible(true);
-            signout.setVisible(false);
-        }
-        else{
-            signin.setVisible(true);
-            signout.setVisible(false);
-        }
-
-//        return super.onPrepareOptionsMenu(menu);
-    }
+//    public void updateMenuOptions() {
+////        menu.findItem(R.id.pencil).setVisible(false);
+//
+//        MenuItem signin = menuOption.getItem(R.id.sign_in);
+//        MenuItem signout = menuOption.getItem(R.id.sign_out);
+//
+//        boolean flag = sharedPref.getBoolean("isLogin",false);
+//        Log.d("OnResult", "" + flag);
+//
+//        if(flag)
+//        {
+//            signin.setVisible(true);
+//            signout.setVisible(false);
+//        }
+//        else{
+//            signin.setVisible(true);
+//            signout.setVisible(false);
+//        }
+//
+////        return super.onPrepareOptionsMenu(menu);
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -253,11 +312,13 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this,RenterFavoriteActivity.class);
             startActivity(intent);
         //    Toast.makeText(MainActivity.this, "Favorites", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_notifications) {
-            Intent intent = new Intent(this,RenterNotificationActivity.class);
-            startActivity(intent);
+        }
+//        else if (id == R.id.nav_notifications) {
+//            Intent intent = new Intent(this,RenterNotificationActivity.class);
+//            startActivity(intent);
          //   Toast.makeText(MainActivity.this, "Notification", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_post) {
+ //       }
+    else if (id == R.id.nav_post) {
             Intent intent = new Intent(this,LandlordPostActivity.class);
             startActivity(intent);
         //    Toast.makeText(MainActivity.this, "Post Property", Toast.LENGTH_SHORT).show();

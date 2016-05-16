@@ -55,6 +55,9 @@ public class PropertyDetailsActivity extends MainActivity {
         phone = (TextView) findViewById(R.id.detail_phone);
         button = (Button) findViewById(R.id.favorite);
 
+        if(getIntent().getStringExtra("Favorite").equals("true")){
+                button.setText("Delete favorite");
+        }
         String str = getIntent().getStringExtra("Property");
         property = new Gson().fromJson(str,Property.class);
 
@@ -84,7 +87,16 @@ public class PropertyDetailsActivity extends MainActivity {
     }
 
     public void addBookmarkMethod(View view){
-        new AddBookMarkAsync().execute();
+
+        Log.d("Favorite", getIntent().getStringExtra("Favorite"));
+
+        if(getIntent().getStringExtra("Favorite").equals("true")){
+            new DeleteFavoriteAsync().execute();
+        }
+        else{
+            new AddBookMarkAsync().execute();
+        }
+
     }
 
     private class AddBookMarkAsync extends AsyncTask<Void,Void,Void>{
@@ -121,4 +133,37 @@ public class PropertyDetailsActivity extends MainActivity {
         }
     }
 
+    private class DeleteFavoriteAsync extends AsyncTask<Void,Void,Void>{
+
+        RestAdapter restAdapter;
+        @Override
+        protected void onPreExecute(){
+            final OkHttpClient okHttpClient = new OkHttpClient();
+            String url = "http://ec2-54-153-29-131.us-west-1.compute.amazonaws.com:8080";
+            restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(url)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setClient(new OkClient(okHttpClient))
+                    .build();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
+            Favourites favourites = new Favourites(property.getPropertyOwnerId(),property.getPropertyId());
+
+            restApiClass.deleteFavorite(property.getPropertyOwnerId(), property.getPropertyId());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(getApplicationContext(), RenterFavoriteActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+            return null;
+        }
+    }
 }

@@ -2,8 +2,10 @@ package com.example.hemil.rentapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +38,8 @@ public class RenterSearchActivity extends MainActivity {
     List<Property> listProperty;
     String str_key, str_city, str_zip, str_type;
     double str_lp = 0, str_hp = 0;
+    SharedPreferences sharedPreferences;
+    long userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +51,8 @@ public class RenterSearchActivity extends MainActivity {
         //inflate your activity layout here!
         View contentView = inflater.inflate(R.layout.renter_search, null, false);
         mDrawer.addView(contentView, 0);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        userId = sharedPreferences.getLong("userId", 0);
 
         keyword = (EditText) findViewById(R.id.edit_search_keyword);
         city = (EditText) findViewById(R.id.edit_search_city);
@@ -72,7 +78,7 @@ public class RenterSearchActivity extends MainActivity {
     }
 
     public void saveSearchPropertyMethod(View view){
-
+            new SavedSearchAsync().execute();
     }
 
     public void showSearchResultList(){
@@ -161,5 +167,57 @@ public class RenterSearchActivity extends MainActivity {
             return null;
         }
     }
+
+    private class SavedSearchAsync extends AsyncTask<Void,Void,Void>{
+
+        RestAdapter restAdapter;
+
+        @Override
+        protected void onPreExecute(){
+
+
+            final OkHttpClient okHttpClient = new OkHttpClient();
+
+            String url = "http://ec2-54-153-29-131.us-west-1.compute.amazonaws.com:8080";
+
+            restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(url)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .setClient(new OkClient(okHttpClient))
+                    .build();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            str_key = keyword.getText().toString();
+            str_type = spinner.getSelectedItem().toString();
+            str_city = city.getText().toString();
+            str_zip = zipcode.getText().toString();
+
+            if( !lprice.getText().toString().isEmpty())
+                str_lp = Double.parseDouble(lprice.getText().toString());
+
+            if(!hprice.getText().toString().isEmpty())
+                str_hp = Double.parseDouble(hprice.getText().toString());
+
+            SavedSearch savedSearch = new SavedSearch(0,userId,str_hp,str_lp,str_key,str_city,str_zip,str_type);
+            final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
+
+            restApiClass.saveSearchForUser(savedSearch);
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//stuff that updates ui
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+            return null;
+        }
+    }
+
 }
 

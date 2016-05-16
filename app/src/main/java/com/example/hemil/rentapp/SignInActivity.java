@@ -9,6 +9,7 @@ import android.content.pm.Signature;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,10 +37,12 @@ import POJO.User;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
+import static android.content.Context.MODE_PRIVATE;
+
 /**
  * Created by hemil on 5/12/2016.
  */
-public class SignInActivity extends MainActivity {
+public class SignInActivity extends AppCompatActivity {
 
     private LoginButton loginButton;
     private CallbackManager callbackManager;
@@ -52,10 +55,21 @@ public class SignInActivity extends MainActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+    //        sharedPreferences = getApplicationContext().getSharedPreferences("ForRent",Context.MODE_PRIVATE);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
 
+
+        super.onCreate(savedInstanceState);
+//        findViewById(R.id.listView_home).setVisibility(View.INVISIBLE);
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        //inflate your activity layout here!
+        View contentView = inflater.inflate(R.layout.sign_in, null, false);
+      //  mDrawer.addView(contentView, 0);
+
+        setContentView(R.layout.sign_in);
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
                     "com.example.hemil.rentapp",
@@ -70,23 +84,14 @@ public class SignInActivity extends MainActivity {
                 md.update(signature.toByteArray());
                 String s = Base64.encodeToString(md.digest(), Base64.DEFAULT);
                 Log.v("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-                Log.i("K", s);
-                Log.d("K", s);
-                Log.e("K", s);
             }
         } catch (PackageManager.NameNotFoundException e) {
-
+            Log.v("KeyHash Error", "");
+            e.printStackTrace();
         } catch (Exception e) {
-
+            Log.v("KeyHash Error", "");
+            e.printStackTrace();
         }
-        super.onCreate(savedInstanceState);
-        findViewById(R.id.listView_home).setVisibility(View.INVISIBLE);
-
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        //inflate your activity layout here!
-        View contentView = inflater.inflate(R.layout.sign_in, null, false);
-        mDrawer.addView(contentView, 0);
 
         loginButton = (LoginButton)findViewById(R.id.login_button);
 
@@ -95,10 +100,14 @@ public class SignInActivity extends MainActivity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("Success","onSuccess");
+                Log.d("Success", "onSuccess");
                 Log.d("Success", "Facebook User ID: " + loginResult.getAccessToken().getUserId() + "\n" + "Auth Token: " + loginResult.getAccessToken().getToken());
 
                 userId = Long.valueOf(loginResult.getAccessToken().getUserId());
+
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putLong("userId", userId);
+                editor.commit();
 
                 GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
 
@@ -136,13 +145,14 @@ public class SignInActivity extends MainActivity {
             @Override
             public void onCancel() {
 //                info.setText("Login attempt canceled.");
-                Log.d("Oncancel","oncancel");
+                Log.d("Oncancel", "oncancel");
             }
 
             @Override
             public void onError(FacebookException e) {
 //                info.setText("Login attempt failed.");
-                Log.d("Error","onError");
+                Log.d("Error", "onError");
+                e.printStackTrace();
 
             }
         });
@@ -152,6 +162,10 @@ public class SignInActivity extends MainActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(i);
+
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 

@@ -2,8 +2,10 @@ package com.example.hemil.rentapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,11 +34,16 @@ public class LandlordShowListActivity extends MainActivity {
 
     List<Property> response;
     ListView listView;
+    SharedPreferences sharedPreferences;
+    long userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("Inside","LandlordShow");
         super.onCreate(savedInstanceState);
         findViewById(R.id.listView_home).setVisibility(View.INVISIBLE);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         //inflate your activity layout here!
@@ -99,7 +106,8 @@ public class LandlordShowListActivity extends MainActivity {
         protected Void doInBackground(Void... params) {
 
             final RestApiClass restApiClass = restAdapter.create(RestApiClass.class);
-            response = restApiClass.getLandlordProperty(1);
+            userId = sharedPreferences.getLong("userId", 0);
+            response = restApiClass.getLandlordProperty(userId);
             Log.d("Response_edit", response.toString());
 
             runOnUiThread(new Runnable() {

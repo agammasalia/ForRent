@@ -1,13 +1,17 @@
 package com.example.hemil.rentapp;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
@@ -62,15 +66,22 @@ public class PopulateListViewAdapter extends BaseAdapter {
 
 
         title.setText(propertyList.get(position).getPropertyTitle());
-        price.setText("Price:"+ propertyList.get(position).getPropertyPrice()+" USD");
+        price.setText("Price:"+ propertyList.get(position).getPropertyPrice()+" USD/month");
         location.setText(propertyList.get(position).getPropertyCity()+", "+propertyList.get(position).getPropertyState()+
         ", "+propertyList.get(position).getPropertyZip());
         bba.setText("Rooms: "+propertyList.get(position).getPropertyNumberOfRooms()+"  Bathrooms: "+
         propertyList.get(position).getPropertyNumberOfBaths()+"  Area: "+propertyList.get(position).getPropertySquareFootage());
 
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.property_item_image);
+        if(propertyList.get(position).getPropertyImage()!=null){
+
+            Picasso.with(context).load(propertyList.get(position).getPropertyImage()).into(imageView);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            imageView.setAlpha((float) 0.85);
+        }
+        else
+        imageView.setImageResource(R.drawable.nopreview);
         return convertView;
     }
-
-
 
 }

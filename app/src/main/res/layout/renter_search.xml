@@ -31,10 +31,12 @@
                 android:text="Keyword"
                 />
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/edit_search_keyword"
                 android:layout_marginLeft="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textPersonName"
                 android:background="@android:color/transparent"
                 />
         </LinearLayout>
@@ -69,10 +71,12 @@
                 android:text="City"
                 />
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/edit_search_city"
                 android:layout_marginLeft="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textPersonName"
                 android:background="@android:color/transparent"
                 />
         </LinearLayout>
@@ -93,6 +97,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="number"
+                android:imeOptions="actionNext"
                 android:background="@android:color/transparent"
                 />
         </LinearLayout>
@@ -112,10 +118,12 @@
                 android:text="Low Price"
                 />
             <EditText
-                android:id="@+id/edit_search_high_price"
+                android:id="@+id/edit_search_low_price"
                 android:layout_marginLeft="10dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:inputType="number"
+                android:imeOptions="actionNext"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 />
@@ -127,10 +135,12 @@
                 android:text="High Price"
                 />
             <EditText
-                android:id="@+id/edit_search_low_price"
+                android:id="@+id/edit_search_high_price"
                 android:layout_marginLeft="10dp"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:inputType="number"
+                android:imeOptions="actionDone"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 />

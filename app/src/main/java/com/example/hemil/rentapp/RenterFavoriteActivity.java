@@ -66,6 +66,7 @@ public class RenterFavoriteActivity extends MainActivity {
                     Gson gson = new Gson();
                     String str = gson.toJson(list.get(position)).toString();
                     intent.putExtra("Property", str);
+                    intent.putExtra("Favorite","true");
                     startActivity(intent);
                 }
 
