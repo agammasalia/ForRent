@@ -16,6 +16,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 import com.google.gson.Gson;
 
+import org.json.JSONObject;
+
 import POJO.Property;
 
 public class MyGcmListenerService extends GcmListenerService {
@@ -37,9 +39,11 @@ public class MyGcmListenerService extends GcmListenerService {
 
 
         String property = data.getString("property");
+        Log.d("property String",property);
+
         Gson gson = new Gson();
 
-        Property property1 = gson.fromJson(gson.toJson(property),Property.class);
+        Property property1 = gson.fromJson(property,Property.class);
 
         Log.d("property Object",property1.toString());
         Log.d(TAG, "From: " + from);

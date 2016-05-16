@@ -27,7 +27,15 @@ public class PopulateListViewAdapter extends BaseAdapter {
     Context context;
     List<Property> propertyList;
     LayoutInflater layoutInflater;
+//   TextView title, price, location, bba;
+//    ImageView imageView;
+static class Holder{
     TextView title, price, location, bba;
+    ImageView imageView;
+}
+
+    Holder holder;
+
 
 
     public PopulateListViewAdapter(Context context, List<Property> propertyList){
@@ -57,30 +65,37 @@ public class PopulateListViewAdapter extends BaseAdapter {
 
         if(convertView == null){
             convertView = layoutInflater.inflate(R.layout.property_list_item,null);
+            holder = new Holder();
 
-            title = (TextView) convertView.findViewById(R.id.property_item_title);
-            price = (TextView) convertView.findViewById(R.id.property_item_price);
-            location = (TextView) convertView.findViewById(R.id.property_item_location);
-            bba = (TextView) convertView.findViewById(R.id.property_item_bath_bed_area);
-        }
+            holder.title = (TextView) convertView.findViewById(R.id.property_item_title);
+            holder.price = (TextView) convertView.findViewById(R.id.property_item_price);
+            holder.location = (TextView) convertView.findViewById(R.id.property_item_location);
+            holder.bba = (TextView) convertView.findViewById(R.id.property_item_bath_bed_area);
 
-
-        title.setText(propertyList.get(position).getPropertyTitle());
-        price.setText("Price:"+ propertyList.get(position).getPropertyPrice()+" USD/month");
-        location.setText(propertyList.get(position).getPropertyCity()+", "+propertyList.get(position).getPropertyState()+
-        ", "+propertyList.get(position).getPropertyZip());
-        bba.setText("Rooms: "+propertyList.get(position).getPropertyNumberOfRooms()+"  Bathrooms: "+
-        propertyList.get(position).getPropertyNumberOfBaths()+"  Area: "+propertyList.get(position).getPropertySquareFootage());
-
-        ImageView imageView = (ImageView) convertView.findViewById(R.id.property_item_image);
-        if(propertyList.get(position).getPropertyImage()!=null){
-
-            Picasso.with(context).load(propertyList.get(position).getPropertyImage()).into(imageView);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            imageView.setAlpha((float) 0.85);
+            convertView.setTag(holder);
         }
         else
-        imageView.setImageResource(R.drawable.nopreview);
+        {
+            holder = (Holder) convertView.getTag();
+        }
+
+
+        holder.title.setText(propertyList.get(position).getPropertyTitle());
+        holder.price.setText("Price:"+ propertyList.get(position).getPropertyPrice()+" USD/month");
+        holder.location.setText(propertyList.get(position).getPropertyCity()+", "+propertyList.get(position).getPropertyState()+
+        ", "+propertyList.get(position).getPropertyZip());
+        holder.bba.setText("Rooms: "+propertyList.get(position).getPropertyNumberOfRooms()+"  Bathrooms: "+
+        propertyList.get(position).getPropertyNumberOfBaths()+"  Area: "+propertyList.get(position).getPropertySquareFootage());
+
+        holder.imageView = (ImageView) convertView.findViewById(R.id.property_item_image);
+        if(propertyList.get(position).getPropertyImage()!=null){
+
+            Picasso.with(context).load(propertyList.get(position).getPropertyImage()).into( holder.imageView);
+            holder.imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            holder.imageView.setAlpha((float) 0.85);
+        }
+        else
+            holder.imageView.setImageResource(R.drawable.nopreview);
         return convertView;
     }
 

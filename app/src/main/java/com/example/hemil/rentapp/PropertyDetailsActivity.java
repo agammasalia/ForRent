@@ -55,9 +55,12 @@ public class PropertyDetailsActivity extends MainActivity {
         phone = (TextView) findViewById(R.id.detail_phone);
         button = (Button) findViewById(R.id.favorite);
 
-        if(getIntent().getStringExtra("Favorite").equals("true")){
+        if(getIntent().hasExtra("Favorite")){
+            if(getIntent().getStringExtra("Favorite").equals("true")){
                 button.setText("Delete favorite");
+            }
         }
+
         String str = getIntent().getStringExtra("Property");
         property = new Gson().fromJson(str,Property.class);
 
