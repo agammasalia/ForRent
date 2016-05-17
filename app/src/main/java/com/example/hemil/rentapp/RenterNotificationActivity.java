@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.ListView;
 
 /**
- * Created by hemil on 5/10/2016.
  */
 public class RenterNotificationActivity extends MainActivity {
 

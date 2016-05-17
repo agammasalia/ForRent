@@ -22,7 +22,7 @@ import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
 /**
- * Created by hemil on 5/10/2016.
+ *
  */
 public class RenterFavoriteActivity extends MainActivity {
 

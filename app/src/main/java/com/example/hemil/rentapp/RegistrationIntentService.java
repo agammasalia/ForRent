@@ -4,7 +4,6 @@ import android.content.Intent;
 
 
 /**
- * Created by agama on 5/13/2016.
  */
 import android.app.IntentService;
 import android.content.Intent;

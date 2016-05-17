@@ -22,7 +22,6 @@ import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
 /**
- * Created by hemil on 5/11/2016.
  */
 public class PropertyDetailsActivity extends MainActivity {
 

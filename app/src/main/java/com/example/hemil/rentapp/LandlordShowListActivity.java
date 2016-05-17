@@ -28,7 +28,6 @@ import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 
 /**
- * Created by hemil on 5/9/2016.
  */
 public class LandlordShowListActivity extends MainActivity {
 

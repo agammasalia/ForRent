@@ -43,7 +43,6 @@ import POJO.Property;
 import retrofit.client.OkClient;
 
 /**
- * Created by hemil on 5/8/2016.
  */
 public class LandlordPostActivity extends MainActivity implements AdapterView.OnItemSelectedListener {
 

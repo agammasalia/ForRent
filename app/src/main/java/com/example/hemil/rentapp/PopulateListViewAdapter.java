@@ -20,7 +20,6 @@ import java.util.List;
 import POJO.Property;
 
 /**
- * Created by hemil on 5/11/2016.
  */
 public class PopulateListViewAdapter extends BaseAdapter {
 

@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.ListView;
 
 /**
- * Created by hemil on 5/12/2016.
  */
 public class SearchResultShowActivity extends MainActivity {
 

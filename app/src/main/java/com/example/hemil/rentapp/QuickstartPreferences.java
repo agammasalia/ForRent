@@ -1,7 +1,7 @@
 package com.example.hemil.rentapp;
 
 /**
- * Created by agama on 5/13/2016.
+ *
  */
 public class QuickstartPreferences {
 

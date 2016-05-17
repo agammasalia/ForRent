@@ -40,7 +40,6 @@ import retrofit.client.OkClient;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
- * Created by hemil on 5/12/2016.
  */
 public class SignInActivity extends AppCompatActivity {
 

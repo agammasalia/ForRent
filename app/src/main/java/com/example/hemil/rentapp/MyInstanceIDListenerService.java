@@ -5,7 +5,6 @@ import android.content.Intent;
 import com.google.android.gms.iid.InstanceIDListenerService;
 
 /**
- * Created by agama on 5/13/2016.
  */
 public class MyInstanceIDListenerService extends InstanceIDListenerService {
 
